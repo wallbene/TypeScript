@@ -1,4 +1,4 @@
-class Mensagem {
+export class Mensagem {
 
     private _texto: string = '';
 
