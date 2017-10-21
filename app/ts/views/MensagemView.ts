@@ -1,10 +1,9 @@
 import {View} from './View';
-import { Mensagem } from '../models/Mensagem';
 
-export class MensagemView extends View<Mensagem> {
+export class MensagemView extends View<String> {
 
-    template(model: Mensagem): string{
-        return `<p class="alert alert-info">${model.texto}</p>`;
+    template(model: String): string{
+        return `<p class="alert alert-info">${model}</p>`;
 
     }
 

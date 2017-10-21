@@ -1,7 +1,7 @@
 System.register(["../models/index", "../views/index"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var index_1, index_2, NegociacaoController;
+    var index_1, index_2, NegociacaoController, diaDaSemana;
     return {
         setters: [
             function (index_1_1) {
@@ -15,7 +15,6 @@ System.register(["../models/index", "../views/index"], function (exports_1, cont
             NegociacaoController = class NegociacaoController {
                 constructor() {
                     this._negociacoes = new index_1.Negociacoes();
-                    this._mensagem = new index_1.Mensagem();
                     this._negociacoesView = new index_2.NegociacoesView('#negociacoesView');
                     this._mensagemView = new index_2.MensagemView('#mensagemView');
                     this._inputData = $('#data');
@@ -25,14 +24,30 @@ System.register(["../models/index", "../views/index"], function (exports_1, cont
                 }
                 adiciona(event) {
                     event.preventDefault();
-                    const negociacao = new index_1.Negociacao(new Date(this._inputData.val().replace(/-/g, ',')), parseInt(this._inputQuantidade.val()), parseFloat(this._inputValor.val()));
+                    let data = new Date(this._inputData.val().replace(/-/g, ','));
+                    if (this._ehDiaUtil(data)) {
+                        this._mensagemView.update("Somente é permitido dias úteis para data");
+                        return;
+                    }
+                    const negociacao = new index_1.Negociacao(data, parseInt(this._inputQuantidade.val()), parseFloat(this._inputValor.val()));
                     this._negociacoes.adiciona(negociacao);
                     this._negociacoesView.update(this._negociacoes);
-                    this._mensagem.texto = 'Negociação adicionada com sucesso!';
-                    this._mensagemView.update(this._mensagem);
+                    this._mensagemView.update('Negociação adicionada com sucesso!');
+                }
+                _ehDiaUtil(data) {
+                    return data.getDay() == diaDaSemana.sabado || data.getDay() == diaDaSemana.domingo;
                 }
             };
             exports_1("NegociacaoController", NegociacaoController);
+            (function (diaDaSemana) {
+                diaDaSemana[diaDaSemana["domingo"] = 0] = "domingo";
+                diaDaSemana[diaDaSemana["segunda"] = 1] = "segunda";
+                diaDaSemana[diaDaSemana["terca"] = 2] = "terca";
+                diaDaSemana[diaDaSemana["quarta"] = 3] = "quarta";
+                diaDaSemana[diaDaSemana["quinta"] = 4] = "quinta";
+                diaDaSemana[diaDaSemana["sexta"] = 5] = "sexta";
+                diaDaSemana[diaDaSemana["sabado"] = 6] = "sabado";
+            })(diaDaSemana || (diaDaSemana = {}));
         }
     };
 });
