@@ -16,6 +16,7 @@ System.register([], function (exports_1, context_1) {
                         template = template.replace(/<script>[\s\S]*?<\/script>/, '');
                     }
                     this._elemento.html(template);
+                    const instant2 = performance.now();
                 }
             };
             exports_1("View", View);
