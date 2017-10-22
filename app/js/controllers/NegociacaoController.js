@@ -1,4 +1,4 @@
-System.register(["../models/index", "../views/index", "../helpers/decorators/index"], function (exports_1, context_1) {
+System.register(["../models/index", "../views/index", "../helpers/decorators/index", "../services/index"], function (exports_1, context_1) {
     "use strict";
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -7,7 +7,7 @@ System.register(["../models/index", "../views/index", "../helpers/decorators/ind
         return c > 3 && r && Object.defineProperty(target, key, r), r;
     };
     var __moduleName = context_1 && context_1.id;
-    var index_1, index_2, index_3, NegociacaoController, diaDaSemana;
+    var index_1, index_2, index_3, index_4, NegociacaoController, diaDaSemana;
     return {
         setters: [
             function (index_1_1) {
@@ -18,6 +18,9 @@ System.register(["../models/index", "../views/index", "../helpers/decorators/ind
             },
             function (index_3_1) {
                 index_3 = index_3_1;
+            },
+            function (index_4_1) {
+                index_4 = index_4_1;
             }
         ],
         execute: function () {
@@ -26,10 +29,10 @@ System.register(["../models/index", "../views/index", "../helpers/decorators/ind
                     this._negociacoes = new index_1.Negociacoes();
                     this._negociacoesView = new index_2.NegociacoesView('#negociacoesView');
                     this._mensagemView = new index_2.MensagemView('#mensagemView');
+                    this._negociacaoService = new index_4.NegociacaoService();
                     this._negociacoesView.update(this._negociacoes);
                 }
                 adiciona(event) {
-                    event.preventDefault();
                     let data = new Date(this._inputData.val().replace(/-/g, ','));
                     if (this._ehDiaUtil(data)) {
                         this._mensagemView.update("Somente é permitido dias úteis para data");
@@ -39,6 +42,19 @@ System.register(["../models/index", "../views/index", "../helpers/decorators/ind
                     this._negociacoes.adiciona(negociacao);
                     this._negociacoesView.update(this._negociacoes);
                     this._mensagemView.update('Negociação adicionada com sucesso!');
+                }
+                importa() {
+                    this._negociacaoService.importaNegocicao(res => {
+                        if (!res.ok) {
+                            throw new Error(res.statusText);
+                        }
+                        return res;
+                    })
+                        .then(negociacao => {
+                        negociacao.forEach(negociacao => this._negociacoes.adiciona(negociacao));
+                        this._negociacoesView.update(this._negociacoes);
+                    })
+                        .catch(error => console.log(error.message));
                 }
                 _ehDiaUtil(data) {
                     return data.getDay() == diaDaSemana.sabado || data.getDay() == diaDaSemana.domingo;
@@ -53,6 +69,12 @@ System.register(["../models/index", "../views/index", "../helpers/decorators/ind
             __decorate([
                 index_3.domInject("#valor")
             ], NegociacaoController.prototype, "_inputValor", void 0);
+            __decorate([
+                index_3.throttle()
+            ], NegociacaoController.prototype, "adiciona", null);
+            __decorate([
+                index_3.throttle()
+            ], NegociacaoController.prototype, "importa", null);
             exports_1("NegociacaoController", NegociacaoController);
             (function (diaDaSemana) {
                 diaDaSemana[diaDaSemana["domingo"] = 0] = "domingo";
