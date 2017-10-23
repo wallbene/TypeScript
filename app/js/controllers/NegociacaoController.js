@@ -6,6 +6,14 @@ System.register(["../models/index", "../views/index", "../helpers/decorators/ind
         else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
         return c > 3 && r && Object.defineProperty(target, key, r), r;
     };
+    var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
     var __moduleName = context_1 && context_1.id;
     var index_1, index_2, index_3, index_4, index_5, NegociacaoController, diaDaSemana;
     return {
@@ -48,21 +56,24 @@ System.register(["../models/index", "../views/index", "../helpers/decorators/ind
                     this._mensagemView.update('Negociação adicionada com sucesso!');
                 }
                 importa() {
-                    this._negociacaoService.importaNegocicao(res => {
-                        if (!res.ok) {
-                            throw new Error(res.statusText);
+                    return __awaiter(this, void 0, void 0, function* () {
+                        try {
+                            let negociacoesParaImportar = yield this._negociacaoService.importaNegocicao(res => {
+                                if (!res.ok) {
+                                    throw new Error(res.statusText);
+                                }
+                                return res;
+                            });
+                            const negociacoesImportadas = this._negociacoes.paraArray();
+                            negociacoesParaImportar
+                                .filter(negociacaoParaImportar => !negociacoesImportadas.some(negociacaoImportada => negociacaoParaImportar.ehIgual(negociacaoImportada)))
+                                .forEach(negociacao => this._negociacoes.adiciona(negociacao));
+                            this._negociacoesView.update(this._negociacoes);
                         }
-                        return res;
-                    })
-                        .then(negociacoesParaImportar => {
-                        const negociacoesImportadas = this._negociacoes.paraArray();
-                        return negociacoesParaImportar.filter(negociacaoParaImportar => !negociacoesImportadas.some(negociacaoImportada => negociacaoParaImportar.ehIgual(negociacaoImportada)));
-                    })
-                        .then(negociacoes => {
-                        negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao));
-                        this._negociacoesView.update(this._negociacoes);
-                    })
-                        .catch(error => this._mensagemView.update(error.message));
+                        catch (error) {
+                            this._mensagemView.update(error.message);
+                        }
+                    });
                 }
                 _ehDiaUtil(data) {
                     return data.getDay() == diaDaSemana.sabado || data.getDay() == diaDaSemana.domingo;
