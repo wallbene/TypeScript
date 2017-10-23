@@ -62,7 +62,7 @@ System.register(["../models/index", "../views/index", "../helpers/decorators/ind
                         negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao));
                         this._negociacoesView.update(this._negociacoes);
                     })
-                        .catch(error => console.log(error.message));
+                        .catch(error => this._mensagemView.update(error.message));
                 }
                 _ehDiaUtil(data) {
                     return data.getDay() == diaDaSemana.sabado || data.getDay() == diaDaSemana.domingo;
